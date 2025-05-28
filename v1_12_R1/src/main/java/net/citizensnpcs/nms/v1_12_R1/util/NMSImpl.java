@@ -776,7 +776,7 @@ public class NMSImpl implements NMSBridge {
 
     @Override
     public void load(CommandManager manager) {
-        registerTraitWithCommand(manager, BoatTrait.class);
+        // registerTraitWithCommand(manager, BoatTrait.class); Since 1.19
         registerTraitWithCommand(manager, AreaEffectCloudTrait.class);
         registerTraitWithCommand(manager, EnderDragonTrait.class);
         registerTraitWithCommand(manager, BossBarTrait.class);
