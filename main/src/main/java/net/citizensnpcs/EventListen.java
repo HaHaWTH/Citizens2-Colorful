@@ -7,15 +7,7 @@ import java.util.Objects;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.FishHook;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Minecart;
-import org.bukkit.entity.Mob;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Snowman;
-import org.bukkit.entity.Vehicle;
+import org.bukkit.entity.*;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
@@ -473,8 +465,8 @@ public class EventListen implements Listener {
             if (event.isCancelled() || !(targeter instanceof Mob))
                 return;
             npc.getOrAddTrait(TargetableTrait.class).addTargeter(targeter.getUniqueId());
-        } else if (targeter instanceof Mob) {
-            final NPC prev = plugin.getNPCRegistry().getNPC(((Mob) targeter).getTarget());
+        } else if (targeter instanceof Monster) {
+            final NPC prev = plugin.getNPCRegistry().getNPC(((Monster) targeter).getTarget());
             if (prev == null)
                 return;
             prev.getOrAddTrait(TargetableTrait.class).removeTargeter(targeter.getUniqueId());
@@ -784,11 +776,11 @@ public class EventListen implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onProjectileHit(ProjectileHitEvent event) {
-        NPC npc = CitizensAPI.getNPCRegistry().getNPC(event.getHitEntity());
-        if (npc != null && npc.isProtected() && event.getEntityType().name().contains("WIND_CHARGE")) {
-            event.setCancelled(true);
-            return;
-        }
+//        NPC npc = CitizensAPI.getNPCRegistry().getNPC(event.getHitEntity());
+//        if (npc != null && npc.isProtected() /* && event.getEntityType().name().contains("WIND_CHARGE") */) {
+//            event.setCancelled(true);
+//            return;
+//        }
         if (!(event.getEntity() instanceof FishHook))
             return;
         NMS.removeHookIfNecessary((FishHook) event.getEntity());

@@ -3,6 +3,7 @@ package net.citizensnpcs.trait.waypoint;
 import java.util.Collection;
 import java.util.List;
 
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
@@ -16,8 +17,6 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 import com.google.common.collect.ForwardingList;
 import com.google.common.collect.Lists;
-import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 
 import ch.ethz.globis.phtree.PhTreeSolid;
@@ -144,8 +143,7 @@ public class WanderWaypointProvider implements WaypointProvider {
                             return;
                         }
                         try {
-                            RegionManager manager = WorldGuard.getInstance().getPlatform().getRegionContainer()
-                                    .get(BukkitAdapter.adapt(npc.getStoredLocation().getWorld()));
+                            RegionManager manager = WorldGuardPlugin.inst().getRegionManager(npc.getStoredLocation().getWorld());
                             region = manager.getRegion(regionId);
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -223,8 +221,7 @@ public class WanderWaypointProvider implements WaypointProvider {
             return worldguardRegionCache;
 
         try {
-            RegionManager manager = WorldGuard.getInstance().getPlatform().getRegionContainer()
-                    .get(BukkitAdapter.adapt(npc.getStoredLocation().getWorld()));
+            RegionManager manager = WorldGuardPlugin.inst().getRegionManager(npc.getStoredLocation().getWorld());
             return worldguardRegionCache = manager.getRegion(worldguardRegion);
         } catch (Throwable t) {
             t.printStackTrace();

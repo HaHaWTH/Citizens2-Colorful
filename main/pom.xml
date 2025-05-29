@@ -14,7 +14,7 @@
         <craftbukkit.version>1.21.5-R0.1-SNAPSHOT</craftbukkit.version>
         <placeholderapi.version>2.11.5</placeholderapi.version>
         <citizensapi.version>${project.version}</citizensapi.version>
-        <worldguard.version>7.1.0-SNAPSHOT</worldguard.version>
+        <worldguard.version>6.2</worldguard.version>
     </properties>
     <repositories>
         <repository>
@@ -30,8 +30,7 @@
         </repository>
         <repository>
             <id>placeholderapi</id>
-            <url>
-                https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
+            <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
         </repository>
         <repository>
             <id>sk89q-repo</id>
@@ -99,7 +98,7 @@
         </dependency>
         <dependency>
             <groupId>com.sk89q.worldguard</groupId>
-            <artifactId>worldguard-bukkit</artifactId>
+            <artifactId>worldguard-legacy</artifactId>
             <version>${worldguard.version}</version>
             <scope>provided</scope>
         </dependency> 
