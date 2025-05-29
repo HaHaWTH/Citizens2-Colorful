@@ -462,7 +462,7 @@ public class EventListen implements Listener {
                 event.setCancelled(true);
                 return;
             }
-            if (event.isCancelled() || !(targeter instanceof Mob))
+            if (event.isCancelled() || !(targeter instanceof Monster))
                 return;
             npc.getOrAddTrait(TargetableTrait.class).addTargeter(targeter.getUniqueId());
         } else if (targeter instanceof Monster) {
