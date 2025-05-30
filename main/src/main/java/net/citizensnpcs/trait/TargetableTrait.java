@@ -5,12 +5,12 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
 
 import net.citizensnpcs.api.persistence.Persist;
 import net.citizensnpcs.api.trait.Trait;
 import net.citizensnpcs.api.trait.TraitName;
-import org.bukkit.entity.Monster;
 
 @TraitName("targetable")
 public class TargetableTrait extends Trait {
@@ -37,9 +37,9 @@ public class TargetableTrait extends Trait {
         if (SUPPORTS_GET_ENTITY) {
             for (UUID entityUUID : targeters) {
                 final Entity entity = Bukkit.getEntity(entityUUID);
-                if (entity instanceof Monster) {
+                if (entity instanceof Creature) {
                     if (entity.isValid()) {
-                        ((Monster) entity).setTarget(null);
+                        ((Creature) entity).setTarget(null);
                     }
                 }
             }

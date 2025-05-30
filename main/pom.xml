@@ -85,6 +85,12 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>33.4.8-jre</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
             <groupId>me.clip</groupId>
             <artifactId>placeholderapi</artifactId>
             <version>${placeholderapi.version}</version>
@@ -208,22 +214,36 @@
                                     </includes>
                                 </filter>
                             </filters>
-                            <!--
                             <relocations>
                                 <relocation>
-                                    <pattern>it.unimi.dsi</pattern>
-                                    <shadedPattern>clib.fastutil</shadedPattern>
+                                    <pattern>org.joml</pattern>
+                                    <shadedPattern>clib.joml</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>net.kyori</pattern>
                                     <shadedPattern>clib.net.kyori</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>net.byteflux.libby</pattern>
-                                    <shadedPattern>clib.net.byteflux.libby</shadedPattern>
+                                    <pattern>ch.ethz.globis</pattern>
+                                    <shadedPattern>clib.phtree</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.google.common</pattern>
+                                    <shadedPattern>clib.com.google.common</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.google.errorprone</pattern>
+                                    <shadedPattern>clib.com.google.errorprone</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.google.auto</pattern>
+                                    <shadedPattern>clib.com.google.auto</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.google.j2objc</pattern>
+                                    <shadedPattern>clib.com.google.j2objc</shadedPattern>
                                 </relocation>
                             </relocations>
-                             -->
                         </configuration>
                     </execution>
                 </executions>

@@ -462,11 +462,11 @@ public class EventListen implements Listener {
                 event.setCancelled(true);
                 return;
             }
-            if (event.isCancelled() || !(targeter instanceof Monster))
+            if (event.isCancelled() || !(targeter instanceof Creature))
                 return;
             npc.getOrAddTrait(TargetableTrait.class).addTargeter(targeter.getUniqueId());
-        } else if (targeter instanceof Monster) {
-            final NPC prev = plugin.getNPCRegistry().getNPC(((Monster) targeter).getTarget());
+        } else if (targeter instanceof Creature) {
+            final NPC prev = plugin.getNPCRegistry().getNPC(((Creature) targeter).getTarget());
             if (prev == null)
                 return;
             prev.getOrAddTrait(TargetableTrait.class).removeTargeter(targeter.getUniqueId());
