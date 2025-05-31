@@ -430,7 +430,7 @@ public class Citizens extends JavaPlugin implements CitizensPlugin {
     }
 
     private void scheduleSaveTask(int delay) {
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new CitizensSaveTask(), delay, delay);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(this, new CitizensSaveTask(), delay, delay);
     }
 
     @Override
