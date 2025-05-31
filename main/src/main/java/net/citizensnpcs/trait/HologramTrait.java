@@ -241,7 +241,7 @@ public class HologramTrait extends Trait {
             line.mt = key.keyExists("margin.top") ? key.getDouble("margin.top") : 0.0;
             line.mb = key.keyExists("margin.bottom") ? key.getDouble("margin.bottom") : 0.0;
             if (key.keyExists("backgroundcolor")) {
-                line.setBackgroundColor(Color.fromARGB(key.getInt("backgroundcolor")));
+                line.setBackgroundColor(Color.fromRGB(key.getInt("backgroundcolor")));
             }
             if (key.keyExists("textshadow")) {
                 line.setTextShadow(key.getBoolean("textshadow"));
@@ -361,7 +361,7 @@ public class HologramTrait extends Trait {
             if (!line.persist)
                 continue;
             if (line.backgroundColor != null && !line.backgroundColor.equals(defaultBackgroundColor)) {
-                root.setInt("lines." + i + ".backgroundcolor", line.backgroundColor.asARGB());
+                root.setInt("lines." + i + ".backgroundcolor", line.backgroundColor.asRGB());
             } else {
                 root.removeKey("lines." + i + ".backgroundcolor");
             }

@@ -3,13 +3,6 @@ package net.citizensnpcs.trait;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import org.bukkit.Location;
-import org.bukkit.entity.BlockDisplay;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Interaction;
-import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
-
-import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.api.persistence.Persist;
 import net.citizensnpcs.api.trait.Trait;
@@ -17,18 +10,20 @@ import net.citizensnpcs.api.trait.TraitName;
 import net.citizensnpcs.api.util.BoundingBox;
 import net.citizensnpcs.api.util.EntityDim;
 import net.citizensnpcs.util.NMS;
+import org.bukkit.Location;
 
-@TraitName("boundingbox")
-public class BoundingBoxTrait extends Trait implements Supplier<BoundingBox> {
+@TraitName(value = "boundingbox")
+public class BoundingBoxTrait
+        extends Trait
+        implements Supplier<BoundingBox> {
     private EntityDim base;
     private Function<EntityDim, BoundingBox> function;
     @Persist
-    private float height = -1;
-    private NPC interaction;
+    private float height = -1.0f;
     @Persist
-    private float scale = -1;
+    private float scale = -1.0f;
     @Persist
-    private float width = -1;
+    private float width = -1.0f;
 
     public BoundingBoxTrait() {
         super("boundingbox");
@@ -36,73 +31,43 @@ public class BoundingBoxTrait extends Trait implements Supplier<BoundingBox> {
 
     @Override
     public BoundingBox get() {
-        Location location = npc.getEntity().getLocation();
-        if (function != null) {
-            BoundingBox bb = function.apply(getAdjustedDimensions());
-            NMS.setDimensions(npc.getEntity(), bb.toDimensions());
+        Location location = this.npc.getEntity().getLocation();
+        if (this.function != null) {
+            BoundingBox bb = this.function.apply(this.getAdjustedDimensions());
+            NMS.setDimensions(this.npc.getEntity(), bb.toDimensions());
             return bb.add(location);
         }
-        EntityDim dim = getAdjustedDimensions();
-        NMS.setDimensions(npc.getEntity(), dim);
-        return new BoundingBox(location.getX() - dim.width / 2, location.getY(), location.getZ() - dim.width / 2,
-                location.getX() + dim.width / 2, location.getY() + dim.height, location.getZ() + dim.width / 2);
+        EntityDim dim = this.getAdjustedDimensions();
+        NMS.setDimensions(this.npc.getEntity(), dim);
+        return new BoundingBox(location.getX() - (double) (dim.width / 2.0f), location.getY(), location.getZ() - (double) (dim.width / 2.0f), location.getX() + (double) (dim.width / 2.0f), location.getY() + (double) dim.height, location.getZ() + (double) (dim.width / 2.0f));
     }
 
     public EntityDim getAdjustedDimensions() {
-        EntityDim desired = base;
-        if (scale != -1) {
-            desired = desired.mul(scale);
+        EntityDim desired = this.base;
+        if (this.scale != -1.0f) {
+            desired = desired.mul(this.scale);
         }
-        return new EntityDim(width == -1 ? desired.width : width, height == -1 ? desired.height : height);
+        return new EntityDim(this.width == -1.0f ? desired.width : this.width, this.height == -1.0f ? desired.height : this.height);
     }
 
     @Override
     public void onDespawn() {
-        npc.data().remove(NPC.Metadata.BOUNDING_BOX_FUNCTION);
-        if (interaction != null) {
-            interaction.destroy();
-            interaction = null;
-        }
+        this.npc.data().remove(NPC.Metadata.BOUNDING_BOX_FUNCTION);
     }
 
     @Override
     public void onRemove() {
-        onDespawn();
+        this.onDespawn();
     }
 
     @Override
     public void onSpawn() {
-        if (npc.getEntity().getType().toString().contains("BLOCK_DISPLAY")) {
-            BoundingBox bb = NMS.getCollisionBox(((BlockDisplay) npc.getEntity()).getBlock());
-            base = EntityDim.from(bb);
-        } else {
-            base = EntityDim.from(npc.getEntity());
-        }
-        npc.data().set(NPC.Metadata.BOUNDING_BOX_FUNCTION, this);
-        if (!SUPPORTS_INTERACTION)
-            return;
-        interaction = CitizensAPI.getTemporaryNPCRegistry().createNPC(EntityType.INTERACTION, "");
-        interaction.data().set(NPC.Metadata.NAMEPLATE_VISIBLE, false);
-        interaction.addTrait(new ClickRedirectTrait(npc));
-        interaction.spawn(npc.getStoredLocation());
-        if (SUPPORTS_RESPONSIVE) {
-            ((Interaction) interaction.getEntity()).setResponsive(true);
-        }
-    }
-
-    @Override
-    public void run() {
-        if (interaction == null)
-            return;
-        EntityDim dim = getAdjustedDimensions();
-        interaction.teleport(npc.getEntity().getLocation(), TeleportCause.PLUGIN);
-        Interaction box = ((Interaction) interaction.getEntity());
-        box.setInteractionWidth(dim.width);
-        box.setInteractionHeight(dim.height);
+        this.base = EntityDim.from(this.npc.getEntity());
+        this.npc.data().set(NPC.Metadata.BOUNDING_BOX_FUNCTION, (Object) this);
     }
 
     public void setBoundingBoxFunction(Function<EntityDim, BoundingBox> func) {
-        function = func;
+        this.function = func;
     }
 
     public void setHeight(float height) {
@@ -115,21 +80,5 @@ public class BoundingBoxTrait extends Trait implements Supplier<BoundingBox> {
 
     public void setWidth(float width) {
         this.width = width;
-    }
-
-    private static boolean SUPPORTS_INTERACTION = true;
-    private static boolean SUPPORTS_RESPONSIVE = true;
-
-    static {
-        try {
-            Class<?> clazz = Class.forName("org.bukkit.entity.Interaction");
-            try {
-                clazz.getMethod("isResponsive");
-            } catch (NoSuchMethodException | SecurityException e) {
-                SUPPORTS_RESPONSIVE = false;
-            }
-        } catch (ClassNotFoundException e) {
-            SUPPORTS_INTERACTION = false;
-        }
     }
 }
