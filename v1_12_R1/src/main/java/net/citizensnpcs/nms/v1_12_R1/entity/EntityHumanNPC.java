@@ -77,6 +77,7 @@ public class EntityHumanNPC extends EntityPlayer implements NPCHolder, Skinnable
     private final Map<EnumItemSlot, ItemStack> equipmentCache = Maps.newEnumMap(EnumItemSlot.class);
     private int jumpTicks = 0;
     private PlayerNavigation navigation;
+    private final AdvancementDataPlayer advancementDataPlayer;
     private final CitizensNPC npc;
     private final Location packetLocationCache = new Location(null, 0, 0, 0);
     private final SkinPacketTracker skinTracker;
@@ -98,6 +99,7 @@ public class EntityHumanNPC extends EntityPlayer implements NPCHolder, Skinnable
         } else {
             skinTracker = null;
         }
+        advancementDataPlayer = new EmptyAdvancementDataPlayer(server, CitizensAPI.getDataFolder().getParentFile(), this);
     }
 
     @Override
@@ -241,7 +243,7 @@ public class EntityHumanNPC extends EntityPlayer implements NPCHolder, Skinnable
     @Override
     public AdvancementDataPlayer getAdvancementData() {
         return npc == null ? super.getAdvancementData()
-                : new EmptyAdvancementDataPlayer(server, CitizensAPI.getDataFolder().getParentFile(), this);
+                : advancementDataPlayer;
     }
 
     @Override
