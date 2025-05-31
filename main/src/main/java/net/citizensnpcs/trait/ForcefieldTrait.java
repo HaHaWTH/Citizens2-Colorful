@@ -49,10 +49,10 @@ public class ForcefieldTrait extends Trait {
         double strength = getStrength();
         Location base = npc.getEntity().getLocation();
         for (Player player : CitizensAPI.getLocationLookup().getNearbyVisiblePlayers(npc.getEntity(),
-                new double[] { base.getX() - width / 1.9, base.getY(), base.getZ() - width / 1.9 },
-                new double[] { base.getX() + width / 1.9, base.getY() + height, base.getZ() + width / 1.9 })) {
+                new double[]{base.getX() - width / 1.9, base.getY(), base.getZ() - width / 1.9},
+                new double[]{base.getX() + width / 1.9, base.getY() + height, base.getZ() + width / 1.9})) {
             Vector diff = player.getLocation().subtract(base).toVector();
-            if (diff.isZero())
+            if (diff.getX() == 0 && diff.getY() == 0 && diff.getZ() == 0)
                 continue;
             diff = diff.normalize().setY(getVerticalStrength());
             Vector force = player.getVelocity().add(diff.multiply(strength));
