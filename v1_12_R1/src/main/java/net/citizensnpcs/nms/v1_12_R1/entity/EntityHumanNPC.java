@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import net.citizensnpcs.api.npc.MetadataStore;
 import net.citizensnpcs.util.ClassUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -86,6 +87,7 @@ public class EntityHumanNPC extends EntityPlayer implements NPCHolder, Skinnable
         String name = clazz.getName();
         return name.startsWith("net.citizensnpcs") || name.startsWith("net.minecraft") || name.startsWith("org.bukkit");
     };
+    private static final boolean disableAccessChecks = Boolean.getBoolean("citizens.disableAccessChecks");
 
     public EntityHumanNPC(MinecraftServer minecraftServer, WorldServer world, GameProfile gameProfile,
             PlayerInteractManager playerInteractManager, NPC npc) {
@@ -193,24 +195,25 @@ public class EntityHumanNPC extends EntityPlayer implements NPCHolder, Skinnable
 
     @Override
     public void setHealth(float health) {
+        if (L()) return;
         Class<?> caller = ClassUtil.getCallerClass();
-        boolean isAllowed = caller == null || classCache.computeIfAbsent(caller, allowCheckFunction);
+        boolean isAllowed = disableAccessChecks || caller == null || classCache.computeIfAbsent(caller, allowCheckFunction);
         if (isAllowed) {
             super.setHealth(health);
         } else {
-            Messaging.log("Denied health set from " + caller.getName());
+            Messaging.log("Denied setHealth call from " + caller.getName());
         }
     }
 
     @Override
     public void die() {
         Class<?> caller = ClassUtil.getCallerClass();
-        boolean isAllowed = caller == null || classCache.computeIfAbsent(caller, allowCheckFunction);
+        boolean isAllowed = disableAccessChecks || caller == null || classCache.computeIfAbsent(caller, allowCheckFunction);
         if (isAllowed) {
             super.die();
             getAdvancementData().a();
         } else {
-            Messaging.log("Denied die from " + caller.getName());
+            Messaging.log("Denied die call from " + caller.getName());
         }
     }
 
@@ -244,6 +247,19 @@ public class EntityHumanNPC extends EntityPlayer implements NPCHolder, Skinnable
     public AdvancementDataPlayer getAdvancementData() {
         return npc == null ? super.getAdvancementData()
                 : advancementDataPlayer;
+    }
+
+    /**
+     * isInvulnerable
+     */
+    @Override
+    public boolean L() {
+        if (npc == null) {
+            return super.L();
+        } else {
+            MetadataStore data = npc.data();
+            return data == null ? super.L() : data.get(NPC.Metadata.DEFAULT_PROTECTED, true);
+        }
     }
 
     @Override
