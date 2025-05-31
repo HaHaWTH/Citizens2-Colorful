@@ -3,10 +3,13 @@ package net.citizensnpcs.nms.v1_12_R1.entity;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
+import net.citizensnpcs.util.ClassUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.craftbukkit.libs.it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import org.bukkit.craftbukkit.v1_12_R1.CraftServer;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -65,6 +68,7 @@ import net.minecraft.server.v1_12_R1.PathType;
 import net.minecraft.server.v1_12_R1.PlayerInteractManager;
 import net.minecraft.server.v1_12_R1.SoundEffect;
 import net.minecraft.server.v1_12_R1.WorldServer;
+import org.jetbrains.annotations.NotNull;
 
 public class EntityHumanNPC extends EntityPlayer implements NPCHolder, SkinnableEntity {
     private final Map<PathType, Float> bz = Maps.newEnumMap(PathType.class);
@@ -76,6 +80,11 @@ public class EntityHumanNPC extends EntityPlayer implements NPCHolder, Skinnable
     private final CitizensNPC npc;
     private final Location packetLocationCache = new Location(null, 0, 0, 0);
     private final SkinPacketTracker skinTracker;
+    private static final Map<Class<?>, Boolean> classCache = new Object2BooleanOpenHashMap<>();
+    private static final Function<@NotNull Class<?>, Boolean> allowCheckFunction = clazz -> {
+        String name = clazz.getName();
+        return name.startsWith("net.citizensnpcs") || name.startsWith("net.minecraft") || name.startsWith("org.bukkit");
+    };
 
     public EntityHumanNPC(MinecraftServer minecraftServer, WorldServer world, GameProfile gameProfile,
             PlayerInteractManager playerInteractManager, NPC npc) {
@@ -181,9 +190,26 @@ public class EntityHumanNPC extends EntityPlayer implements NPCHolder, Skinnable
     }
 
     @Override
+    public void setHealth(float health) {
+        Class<?> caller = ClassUtil.getCallerClass();
+        boolean isAllowed = caller == null || classCache.computeIfAbsent(caller, allowCheckFunction);
+        if (isAllowed) {
+            super.setHealth(health);
+        } else {
+            Messaging.log("Denied health set from " + caller.getName());
+        }
+    }
+
+    @Override
     public void die() {
-        super.die();
-        getAdvancementData().a();
+        Class<?> caller = ClassUtil.getCallerClass();
+        boolean isAllowed = caller == null || classCache.computeIfAbsent(caller, allowCheckFunction);
+        if (isAllowed) {
+            super.die();
+            getAdvancementData().a();
+        } else {
+            Messaging.log("Denied die from " + caller.getName());
+        }
     }
 
     @Override
