@@ -74,7 +74,7 @@ public class ClassUtil {
      * @return The class that called the method.
      */
     public static Class<?> getCallerClass() {
-        return getCallerClass(1);
+        return getCallerClass(1 + 1);
     }
 
     /**
