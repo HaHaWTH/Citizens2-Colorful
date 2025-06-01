@@ -1,5 +1,6 @@
 package net.citizensnpcs.nms.v1_12_R1.entity;
 
+import net.citizensnpcs.api.npc.MetadataStore;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_12_R1.CraftServer;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftEntity;
@@ -200,6 +201,32 @@ public class WolfController extends MobEntityController {
         @Override
         public boolean setGoalTarget(EntityLiving entityliving, EntityTargetEvent.TargetReason reason, boolean fire) {
             return npc == null || this.equals(entityliving) ? super.setGoalTarget(entityliving, reason, fire) : false;
+        }
+
+        @Override
+        public void setHealth(float health) {
+            if (be()) return;
+            if (isAccessAllowed()) {
+                super.setHealth(health);
+            }
+        }
+
+        @Override
+        public void die() {
+            if (isAccessAllowed()) {
+                super.die();
+            }
+        }
+
+        @Override
+        public boolean be() {
+            boolean original = super.be();
+            if (npc == null) {
+                return original;
+            } else {
+                MetadataStore data = npc.data();
+                return data == null ? original : data.get(NPC.Metadata.DEFAULT_PROTECTED, true) || original;
+            }
         }
     }
 

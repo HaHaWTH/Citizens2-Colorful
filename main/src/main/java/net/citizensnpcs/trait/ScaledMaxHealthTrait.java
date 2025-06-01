@@ -3,7 +3,6 @@ package net.citizensnpcs.trait;
 import java.math.BigDecimal;
 
 import net.citizensnpcs.util.Util;
-import org.bukkit.Registry;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -41,7 +40,7 @@ public class ScaledMaxHealthTrait extends Trait {
     public void onSpawn() {
         if (maxHealth != null && npc.getEntity() instanceof LivingEntity) {
             if (SUPPORTS_ATTRIBUTES) {
-                ((LivingEntity) npc.getEntity()).getAttribute(Util.getRegistryValue(Registry.ATTRIBUTE, "generic.max_health", "max_health"))
+                ((LivingEntity) npc.getEntity()).getAttribute(Util.getAttribute("GENERIC_MAX_HEALTH"))
                         .setBaseValue(Math.min(MAX_VALUE, maxHealth));
             } else {
                 ((LivingEntity) npc.getEntity()).setMaxHealth(maxHealth);

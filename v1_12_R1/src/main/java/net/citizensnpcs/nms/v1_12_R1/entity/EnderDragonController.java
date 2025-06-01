@@ -2,6 +2,7 @@ package net.citizensnpcs.nms.v1_12_R1.entity;
 
 import java.lang.invoke.MethodHandle;
 
+import net.citizensnpcs.api.npc.MetadataStore;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_12_R1.CraftServer;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftEnderDragon;
@@ -250,6 +251,32 @@ public class EnderDragonController extends MobEntityController {
                 }
             } else {
                 super.n();
+            }
+        }
+
+        @Override
+        public void setHealth(float health) {
+            if (be()) return;
+            if (isAccessAllowed()) {
+                super.setHealth(health);
+            }
+        }
+
+        @Override
+        public void die() {
+            if (isAccessAllowed()) {
+                super.die();
+            }
+        }
+
+        @Override
+        public boolean be() {
+            boolean original = super.be();
+            if (npc == null) {
+                return original;
+            } else {
+                MetadataStore data = npc.data();
+                return data == null ? original : data.get(NPC.Metadata.DEFAULT_PROTECTED, true) || original;
             }
         }
 

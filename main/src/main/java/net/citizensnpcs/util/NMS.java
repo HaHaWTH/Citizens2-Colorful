@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Registry;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attributable;
 import org.bukkit.attribute.AttributeInstance;
@@ -128,10 +127,9 @@ public class NMS {
         if (npc.getEntity() == null)
             return;
         if (SUPPORTS_ATTRIBUTABLE && npc.getEntity() instanceof Attributable) {
-            AttributeInstance attribute = ((Attributable) npc.getEntity()).getAttribute(
-                    Util.getRegistryValue(Registry.ATTRIBUTE, "generic.knockback_resistance", "knockback_resistance"));
+            AttributeInstance attribute = ((LivingEntity) npc.getEntity()).getAttribute(Util.getAttribute("GENERIC_KNOCKBACK_RESISTANCE"));
             if (attribute != null) {
-                strength *= 1 - attribute.getValue();
+                strength *= (float) (1 - attribute.getValue());
             }
         }
         Vector vector = npc.getEntity().getVelocity();

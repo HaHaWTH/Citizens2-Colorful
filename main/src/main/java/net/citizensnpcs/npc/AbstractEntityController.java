@@ -1,5 +1,8 @@
 package net.citizensnpcs.npc;
 
+import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
+import net.citizensnpcs.api.util.Messaging;
+import net.citizensnpcs.util.ClassUtil;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -10,9 +13,29 @@ import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.util.NMS;
 import net.citizensnpcs.util.Util;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Map;
+import java.util.function.Function;
 
 public abstract class AbstractEntityController implements EntityController {
     private Entity bukkitEntity;
+    private static final Function<@NotNull Class<?>, Boolean> allowCheckFunction = clazz -> {
+        String name = clazz.getName();
+        return name.startsWith("net.citizensnpcs") || name.startsWith("net.minecraft") || name.startsWith("org.bukkit");
+    };
+    private static final boolean disableAccessChecks = Boolean.getBoolean("citizens.disableAccessChecks");
+    private static final Map<Class<?>, Boolean> classCache = new Object2BooleanOpenHashMap<>();
+
+    public static boolean isAccessAllowed() {
+        if (disableAccessChecks) return true;
+        Class<?> caller = ClassUtil.getCallerClass(2);
+        boolean allow = caller == null || classCache.computeIfAbsent(caller, allowCheckFunction);
+        if (!allow) {
+            Messaging.log("Denied access from " + caller.getName());
+        }
+        return allow;
+    }
 
     public AbstractEntityController() {
     }

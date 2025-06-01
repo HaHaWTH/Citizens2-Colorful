@@ -7,9 +7,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 
+import net.citizensnpcs.util.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Registry;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -56,12 +56,6 @@ import net.citizensnpcs.trait.ScoreboardTrait;
 import net.citizensnpcs.trait.SitTrait;
 import net.citizensnpcs.trait.SkinLayers;
 import net.citizensnpcs.trait.SneakTrait;
-import net.citizensnpcs.util.ChunkCoord;
-import net.citizensnpcs.util.Messages;
-import net.citizensnpcs.util.NMS;
-import net.citizensnpcs.util.PlayerAnimation;
-import net.citizensnpcs.util.PlayerUpdateTask;
-import net.citizensnpcs.util.Util;
 
 public class CitizensNPC extends AbstractNPC {
     private ChunkCoord cachedCoord;
@@ -383,7 +377,7 @@ public class CitizensNPC extends AbstractNPC {
                         ex.printStackTrace();
                     }
                 }
-                NMS.replaceTracker(getEntity());
+                if (getEntity() instanceof Player) NMS.replaceTracker(getEntity());
                 data().remove(NPC.Metadata.NPC_SPAWNING_IN_PROGRESS);
                 EntityType type = getEntity().getType();
                 if (type.isAlive()) {
@@ -392,8 +386,7 @@ public class CitizensNPC extends AbstractNPC {
 
                     if (type == EntityType.PLAYER || Util.isHorse(type)) {
                         if (SUPPORT_ATTRIBUTES && !hasTrait(AttributeTrait.class)
-                                || !getTrait(AttributeTrait.class).hasAttribute(Util
-                                        .getRegistryValue(Registry.ATTRIBUTE, "generic.step_height", "step_height"))) {
+                                || !getTrait(AttributeTrait.class).hasAttribute(Util.getAttribute("HORSE_JUMP_STRENGTH"))) {
                             NMS.setStepHeight(entity, 1);
                         }
                     }

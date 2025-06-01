@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Registry;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarFlag;
 import org.bukkit.boss.BarStyle;
@@ -142,7 +141,7 @@ public class BossBarTrait extends Trait {
                     LivingEntity entity = (LivingEntity) npc.getEntity();
                     double maxHealth = entity.getMaxHealth();
                     if (SUPPORT_ATTRIBUTES) {
-                        maxHealth = entity.getAttribute(Util.getRegistryValue(Registry.ATTRIBUTE, "generic.max_health", "max_health"))
+                        maxHealth = entity.getAttribute(Util.getAttribute("GENERIC_MAX_HEALTH"))
                                 .getValue();
                     }
                     bar.setProgress(entity.getHealth() / maxHealth);

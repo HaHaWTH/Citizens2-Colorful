@@ -3,14 +3,11 @@ package net.citizensnpcs.nms.v1_12_R1.entity;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 
 import net.citizensnpcs.api.npc.MetadataStore;
-import net.citizensnpcs.util.ClassUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.libs.it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import org.bukkit.craftbukkit.v1_12_R1.CraftServer;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -69,7 +66,8 @@ import net.minecraft.server.v1_12_R1.PathType;
 import net.minecraft.server.v1_12_R1.PlayerInteractManager;
 import net.minecraft.server.v1_12_R1.SoundEffect;
 import net.minecraft.server.v1_12_R1.WorldServer;
-import org.jetbrains.annotations.NotNull;
+
+import static net.citizensnpcs.npc.AbstractEntityController.*;
 
 public class EntityHumanNPC extends EntityPlayer implements NPCHolder, SkinnableEntity {
     private final Map<PathType, Float> bz = Maps.newEnumMap(PathType.class);
@@ -82,12 +80,6 @@ public class EntityHumanNPC extends EntityPlayer implements NPCHolder, Skinnable
     private final CitizensNPC npc;
     private final Location packetLocationCache = new Location(null, 0, 0, 0);
     private final SkinPacketTracker skinTracker;
-    private static final Map<Class<?>, Boolean> classCache = new Object2BooleanOpenHashMap<>();
-    private static final Function<@NotNull Class<?>, Boolean> allowCheckFunction = clazz -> {
-        String name = clazz.getName();
-        return name.startsWith("net.citizensnpcs") || name.startsWith("net.minecraft") || name.startsWith("org.bukkit");
-    };
-    private static final boolean disableAccessChecks = Boolean.getBoolean("citizens.disableAccessChecks");
 
     public EntityHumanNPC(MinecraftServer minecraftServer, WorldServer world, GameProfile gameProfile,
             PlayerInteractManager playerInteractManager, NPC npc) {
@@ -195,25 +187,17 @@ public class EntityHumanNPC extends EntityPlayer implements NPCHolder, Skinnable
 
     @Override
     public void setHealth(float health) {
-        if (L()) return;
-        Class<?> caller = ClassUtil.getCallerClass();
-        boolean isAllowed = disableAccessChecks || caller == null || classCache.computeIfAbsent(caller, allowCheckFunction);
-        if (isAllowed) {
+        if (be()) return;
+        if (isAccessAllowed()) {
             super.setHealth(health);
-        } else {
-            Messaging.log("Denied setHealth call from " + caller.getName());
         }
     }
 
     @Override
     public void die() {
-        Class<?> caller = ClassUtil.getCallerClass();
-        boolean isAllowed = disableAccessChecks || caller == null || classCache.computeIfAbsent(caller, allowCheckFunction);
-        if (isAllowed) {
+        if (isAccessAllowed()) {
             super.die();
             getAdvancementData().a();
-        } else {
-            Messaging.log("Denied die call from " + caller.getName());
         }
     }
 
@@ -250,15 +234,16 @@ public class EntityHumanNPC extends EntityPlayer implements NPCHolder, Skinnable
     }
 
     /**
-     * isInvulnerable
+     * Entity#getIsInvulnerable
      */
     @Override
-    public boolean L() {
+    public boolean be() {
+        boolean original = super.be();
         if (npc == null) {
-            return super.L();
+            return original;
         } else {
             MetadataStore data = npc.data();
-            return data == null ? super.L() : data.get(NPC.Metadata.DEFAULT_PROTECTED, true);
+            return data == null ? original : data.get(NPC.Metadata.DEFAULT_PROTECTED, true) || original;
         }
     }
 

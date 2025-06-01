@@ -1,5 +1,6 @@
 package net.citizensnpcs.nms.v1_12_R1.entity.nonliving;
 
+import net.citizensnpcs.api.npc.MetadataStore;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_12_R1.CraftServer;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftEntity;
@@ -107,6 +108,24 @@ public class MinecartFurnaceController extends MobEntityController {
         @Override
         public EnumPistonReaction getPushReaction() {
             return Util.callPistonPushEvent(npc) ? EnumPistonReaction.IGNORE : super.getPushReaction();
+        }
+
+        @Override
+        public void die() {
+            if (isAccessAllowed()) {
+                super.die();
+            }
+        }
+
+        @Override
+        public boolean be() {
+            boolean original = super.be();
+            if (npc == null) {
+                return original;
+            } else {
+                MetadataStore data = npc.data();
+                return data == null ? original : data.get(NPC.Metadata.DEFAULT_PROTECTED, true) || original;
+            }
         }
     }
 
