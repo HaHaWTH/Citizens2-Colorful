@@ -377,7 +377,7 @@ public class CitizensNPC extends AbstractNPC {
                         ex.printStackTrace();
                     }
                 }
-                if (getEntity() instanceof Player) NMS.replaceTracker(getEntity());
+                NMS.replaceTracker(getEntity());
                 data().remove(NPC.Metadata.NPC_SPAWNING_IN_PROGRESS);
                 EntityType type = getEntity().getType();
                 if (type.isAlive()) {
