@@ -1,13 +1,15 @@
 package net.citizensnpcs.util;
 
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 /**
  * Utility class for getting the caller class.
  */
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings({"rawtypes", "unchecked", "unused"})
 public class ClassUtil {
     private ClassUtil() {
     }
@@ -56,7 +58,7 @@ public class ClassUtil {
             md_walk = ReflectionChain.fromClass(stackWalkerClass)
                     .name("walk")
                     .accessible(true)
-                    .param(java.util.function.Function.class)
+                    .param(Function.class)
                     .declaredMethod();
         } catch (Exception ignored) {
         }
@@ -68,13 +70,18 @@ public class ClassUtil {
         STACK_WALKER_walk = md_walk;
     }
 
+    private static final int DEFAULT_SKIP_FRAMES = 2;
     /**
      * Returns the class that called the method.
      *
      * @return The class that called the method.
      */
     public static Class<?> getCallerClass() {
-        return getCallerClass(1 + 1);
+        return getCallerClass(DEFAULT_SKIP_FRAMES, Preference.SUN_REFLECT_REFLECTION);
+    }
+
+    public static Class<?> getCallerClass(Preference preference) {
+        return getCallerClass(DEFAULT_SKIP_FRAMES, preference);
     }
 
     /**
@@ -83,41 +90,93 @@ public class ClassUtil {
      * @param skipFrames The number of frames to skip.
      * @return The class that called the method.
      */
-    public static Class<?> getCallerClass(int skipFrames) {
-        if (STACK_WALKER_getInstance != null && RETAIN_CLASS_REFERENCE != null && STACK_WALKER_CLASS != null && STACK_FRAME_CLASS != null) {
-            try {
-                Set<Object> options = java.util.Collections.singleton(RETAIN_CLASS_REFERENCE);
-                Object stackWalkerInstance = STACK_WALKER_getInstance.invoke(null, options, skipFrames + 1);
-
-                java.util.function.Function<Stream<?>, Class<?>> walkFunction = stream -> {
+    public static Class<?> getCallerClass(int skipFrames, Preference preference) {
+        switch (preference) {
+            case STACK_WALKER:
+                if (STACK_WALKER_CLASS != null && STACK_FRAME_CLASS != null) {
                     try {
-                        return stream
-                                .map(frame -> {
-                                    try {
-                                        return (Class<?>) STACK_FRAME_GET_DECLARING_CLASS.invoke(frame);
-                                    } catch (Exception e) {
-                                        return null;
-                                    }
-                                })
-                                .skip(skipFrames + 1)
-                                .findFirst()
-                                .orElse(null);
+                        Set<Object> options = Collections.singleton(RETAIN_CLASS_REFERENCE);
+                        Object stackWalkerInstance = STACK_WALKER_getInstance.invoke(null, options, skipFrames + 1);
+
+                        Function<Stream<?>, Class<?>> walkFunction = stream -> {
+                            try {
+                                return stream
+                                        .map(frame -> {
+                                            try {
+                                                return (Class<?>) STACK_FRAME_GET_DECLARING_CLASS.invoke(frame);
+                                            } catch (Exception e) {
+                                                SneakyThrow.sneaky(e);
+                                                return null;
+                                            }
+                                        })
+                                        .skip(skipFrames + 1)
+                                        .findFirst()
+                                        .orElse(null);
+                            } catch (Exception e) {
+                                SneakyThrow.sneaky(e);
+                                return null;
+                            }
+                        };
+
+                        return (Class<?>) STACK_WALKER_walk.invoke(stackWalkerInstance, walkFunction);
                     } catch (Exception e) {
+                        SneakyThrow.sneaky(e);
                         return null;
                     }
-                };
+                }
+                if (SUN_REFLECT_REFLECTION_getCallerClass != null) {
+                    try {
+                        return (Class<?>) SUN_REFLECT_REFLECTION_getCallerClass.invoke(null, skipFrames + 2);
+                    } catch (Exception th) {
+                        SneakyThrow.sneaky(th);
+                    }
+                }
+                break;
+            case SUN_REFLECT_REFLECTION:
+                if (SUN_REFLECT_REFLECTION_getCallerClass != null) {
+                    try {
+                        return (Class<?>) SUN_REFLECT_REFLECTION_getCallerClass.invoke(null, skipFrames + 2);
+                    } catch (Exception th) {
+                        SneakyThrow.sneaky(th);
+                    }
+                }
+                if (STACK_WALKER_CLASS != null && STACK_FRAME_CLASS != null) {
+                    try {
+                        Set<Object> options = Collections.singleton(RETAIN_CLASS_REFERENCE);
+                        Object stackWalkerInstance = STACK_WALKER_getInstance.invoke(null, options, skipFrames + 1);
 
-                return (Class<?>) STACK_WALKER_walk.invoke(stackWalkerInstance, walkFunction);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+                        Function<Stream<?>, Class<?>> walkFunction = stream -> {
+                            try {
+                                return stream
+                                        .map(frame -> {
+                                            try {
+                                                return (Class<?>) STACK_FRAME_GET_DECLARING_CLASS.invoke(frame);
+                                            } catch (Exception e) {
+                                                SneakyThrow.sneaky(e);
+                                                return null;
+                                            }
+                                        })
+                                        .skip(skipFrames + 1)
+                                        .findFirst()
+                                        .orElse(null);
+                            } catch (Exception e) {
+                                SneakyThrow.sneaky(e);
+                                return null;
+                            }
+                        };
+
+                        return (Class<?>) STACK_WALKER_walk.invoke(stackWalkerInstance, walkFunction);
+                    } catch (Exception e) {
+                        SneakyThrow.sneaky(e);
+                        return null;
+                    }
+                }
         }
-        if (SUN_REFLECT_REFLECTION_getCallerClass != null) {
-            try {
-                return (Class<?>) SUN_REFLECT_REFLECTION_getCallerClass.invoke(null, skipFrames + 2);
-            } catch (Exception ignored) {
-            }
-        }
-        return null;
+        throw new IllegalStateException("No supported methods found.");
+    }
+
+    public enum Preference {
+        STACK_WALKER,
+        SUN_REFLECT_REFLECTION
     }
 }
