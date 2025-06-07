@@ -393,7 +393,7 @@ public class CitizensNPC extends AbstractNPC {
                     if (type == EntityType.PLAYER) {
                         PlayerUpdateTask.registerPlayer(getEntity());
                     } else if (data().has(NPC.Metadata.AGGRESSIVE)) {
-                        NMS.setAggressive(entity, data().<Boolean> get(NPC.Metadata.AGGRESSIVE));
+                        NMS.setAggressive(entity, data().<Boolean>get(NPC.Metadata.AGGRESSIVE));
                     }
                     entity.setNoDamageTicks(data().get(NPC.Metadata.SPAWN_NODAMAGE_TICKS,
                             Setting.DEFAULT_SPAWN_NODAMAGE_DURATION.asTicks()));
@@ -545,7 +545,7 @@ public class CitizensNPC extends AbstractNPC {
     }
 
     private void updateCustomNameVisibility() {
-        String nameplateVisible = data().<Object> get(NPC.Metadata.NAMEPLATE_VISIBLE, true).toString();
+        String nameplateVisible = data().<Object>get(NPC.Metadata.NAMEPLATE_VISIBLE, true).toString();
         if (requiresNameHologram()) {
             nameplateVisible = "false";
         }
@@ -607,6 +607,7 @@ public class CitizensNPC extends AbstractNPC {
     private static boolean SUPPORT_PICKUP_ITEMS = false;
     private static boolean SUPPORT_SILENT = false;
     private static boolean SUPPORT_USE_ITEM = true;
+
     static {
         try {
             Entity.class.getMethod("setGlowing", boolean.class);

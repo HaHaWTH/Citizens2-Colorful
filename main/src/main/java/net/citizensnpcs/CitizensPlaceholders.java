@@ -30,7 +30,7 @@ public class CitizensPlaceholders extends PlaceholderExpansion {
 
     @Override
     public String getVersion() {
-        return "1.0.0";
+        return "Colorful";
     }
 
     @Override
