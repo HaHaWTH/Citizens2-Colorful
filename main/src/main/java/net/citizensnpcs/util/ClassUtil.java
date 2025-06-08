@@ -134,6 +134,13 @@ public class ClassUtil {
      * @return The class that called the method.
      */
     public static Class<?> getCallerClassPreferSunReflection(int skipFrames) {
+        if (SUN_REFLECT_REFLECTION_getCallerClass != null) {
+            try {
+                return (Class<?>) SUN_REFLECT_REFLECTION_getCallerClass.invoke(null, skipFrames + 2);
+            } catch (Exception th) {
+                SneakyThrow.sneaky(th);
+            }
+        }
         if (STACK_WALKER_CLASS != null && STACK_FRAME_CLASS != null) {
             try {
                 Set<Object> options = Collections.singleton(RETAIN_CLASS_REFERENCE);
