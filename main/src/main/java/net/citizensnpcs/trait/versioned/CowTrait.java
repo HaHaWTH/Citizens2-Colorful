@@ -79,8 +79,7 @@ public class CowTrait extends Trait {
         try {
             COW_VARIANT_SETTER = NMS.getMethodHandle(Class.forName("org.bukkit.entity.Cow"), "setVariant", true,
                     Cow.Variant.class);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+        } catch (Throwable ignored) {
         }
     }
 }
