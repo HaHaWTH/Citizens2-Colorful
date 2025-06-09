@@ -30,7 +30,7 @@ public class ClassUtil {
                     .accessible(true)
                     .param(int.class)
                     .declaredMethod();
-        } catch (Exception ignored) {
+        } catch (Throwable ignored) {
         }
         SUN_REFLECT_REFLECTION_getCallerClass = md_getCallerClass;
 
@@ -60,7 +60,7 @@ public class ClassUtil {
                     .accessible(true)
                     .param(Function.class)
                     .declaredMethod();
-        } catch (Exception ignored) {
+        } catch (Throwable ignored) {
         }
         STACK_WALKER_getInstance = md_getInstance;
         RETAIN_CLASS_REFERENCE = retainClassReference;
@@ -70,61 +70,9 @@ public class ClassUtil {
         STACK_WALKER_walk = md_walk;
     }
 
-    private static final int OVERLOAD_METHOD_DEFAULT_SKIP_FRAMES = 2;
-    public static Class<?> getCallerClassPreferSunReflection() {
-        return getCallerClassPreferSunReflection(OVERLOAD_METHOD_DEFAULT_SKIP_FRAMES);
-    }
-
-    public static Class<?> getCallerClassPreferStackWalker() {
-        return getCallerClassPreferStackWalker(OVERLOAD_METHOD_DEFAULT_SKIP_FRAMES);
-    }
-
-    /**
-     * Returns the class that called the method, preferring to StackWalker if available.
-     *
-     * @param skipFrames The number of frames to skip.
-     * @return The class that called the method.
-     */
-    public static Class<?> getCallerClassPreferStackWalker(int skipFrames) {
-        if (STACK_WALKER_CLASS != null && STACK_FRAME_CLASS != null) {
-            try {
-                Set<Object> options = Collections.singleton(RETAIN_CLASS_REFERENCE);
-                Object stackWalkerInstance = STACK_WALKER_getInstance.invoke(null, options, skipFrames + 1);
-
-                Function<Stream<?>, Class<?>> walkFunction = stream -> {
-                    try {
-                        return stream
-                                .map(frame -> {
-                                    try {
-                                        return (Class<?>) STACK_FRAME_GET_DECLARING_CLASS.invoke(frame);
-                                    } catch (Exception e) {
-                                        SneakyThrow.sneaky(e);
-                                        return null;
-                                    }
-                                })
-                                .skip(skipFrames + 1)
-                                .findFirst()
-                                .orElse(null);
-                    } catch (Exception e) {
-                        SneakyThrow.sneaky(e);
-                        return null;
-                    }
-                };
-
-                return (Class<?>) STACK_WALKER_walk.invoke(stackWalkerInstance, walkFunction);
-            } catch (Exception e) {
-                SneakyThrow.sneaky(e);
-                return null;
-            }
-        }
-        if (SUN_REFLECT_REFLECTION_getCallerClass != null) {
-            try {
-                return (Class<?>) SUN_REFLECT_REFLECTION_getCallerClass.invoke(null, skipFrames + 2);
-            } catch (Exception th) {
-                SneakyThrow.sneaky(th);
-            }
-        }
-        throw new IllegalStateException("No supported methods found.");
+    private static final int OVERLOAD_METHOD_DEFAULT_SKIP_FRAMES = 1;
+    public static Class<?> getCallerClass() {
+        return getCallerClass(OVERLOAD_METHOD_DEFAULT_SKIP_FRAMES);
     }
 
     /**
@@ -133,10 +81,10 @@ public class ClassUtil {
      * @param skipFrames The number of frames to skip.
      * @return The class that called the method.
      */
-    public static Class<?> getCallerClassPreferSunReflection(int skipFrames) {
+    public static Class<?> getCallerClass(int skipFrames) {
         if (SUN_REFLECT_REFLECTION_getCallerClass != null) {
             try {
-                return (Class<?>) SUN_REFLECT_REFLECTION_getCallerClass.invoke(null, skipFrames + 2);
+                return (Class<?>) SUN_REFLECT_REFLECTION_getCallerClass.invoke(null, skipFrames + 3);
             } catch (Exception th) {
                 SneakyThrow.sneaky(th);
             }
@@ -144,7 +92,7 @@ public class ClassUtil {
         if (STACK_WALKER_CLASS != null && STACK_FRAME_CLASS != null) {
             try {
                 Set<Object> options = Collections.singleton(RETAIN_CLASS_REFERENCE);
-                Object stackWalkerInstance = STACK_WALKER_getInstance.invoke(null, options, skipFrames + 1);
+                Object stackWalkerInstance = STACK_WALKER_getInstance.invoke(null, options, skipFrames + 2);
 
                 Function<Stream<?>, Class<?>> walkFunction = stream -> {
                     try {
@@ -157,7 +105,7 @@ public class ClassUtil {
                                         return null;
                                     }
                                 })
-                                .skip(skipFrames + 1)
+                                .skip(skipFrames + 2)
                                 .findFirst()
                                 .orElse(null);
                     } catch (Exception e) {

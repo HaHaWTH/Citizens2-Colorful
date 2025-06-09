@@ -29,7 +29,7 @@ public abstract class AbstractEntityController implements EntityController {
 
     public static boolean isAccessAllowed() {
         if (disableAccessChecks) return true;
-        Class<?> caller = ClassUtil.getCallerClassPreferSunReflection(2);
+        Class<?> caller = ClassUtil.getCallerClass(1);
         boolean allow = caller == null || classCache.computeIfAbsent(caller, allowCheckFunction);
         if (!allow) {
             Messaging.log("Denied access from " + caller.getName());
