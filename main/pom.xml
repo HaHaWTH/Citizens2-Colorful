@@ -80,7 +80,7 @@
             <groupId>org.joml</groupId>
             <artifactId>joml</artifactId>
             <version>1.10.8</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>net.citizensnpcs</groupId>
@@ -220,12 +220,10 @@
                                 </filter>
                             </filters>
                             <relocations>
-                            <!--
                                 <relocation>
                                     <pattern>org.joml</pattern>
                                     <shadedPattern>clib.joml</shadedPattern>
                                 </relocation>
-                             -->
                                 <relocation>
                                     <pattern>net.kyori</pattern>
                                     <shadedPattern>clib.net.kyori</shadedPattern>
