@@ -1074,10 +1074,10 @@ public class NMS {
         giveReflectiveAccess(Field.class, NMS.class);
         MODIFIERS_FIELD = NMS.getField(Field.class, "modifiers", false);
 
-        try {
+        /*try {
             NMS.getFinalSetter(MinecraftClient.class, "LOGGER").invoke(NOPLogger.NOP_LOGGER);
         } catch (Throwable e) {
             e.printStackTrace();
-        }
+        }*/
     }
 }
