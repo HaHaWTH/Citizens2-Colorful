@@ -13,9 +13,7 @@ import net.citizensnpcs.util.NMS;
 import org.bukkit.Location;
 
 @TraitName(value = "boundingbox")
-public class BoundingBoxTrait
-        extends Trait
-        implements Supplier<BoundingBox> {
+public class BoundingBoxTrait extends Trait implements Supplier<BoundingBox> {
     private EntityDim base;
     private Function<EntityDim, BoundingBox> function;
     @Persist
