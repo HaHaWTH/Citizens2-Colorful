@@ -17,11 +17,11 @@ public class BoundingBoxTrait extends Trait implements Supplier<BoundingBox> {
     private EntityDim base;
     private Function<EntityDim, BoundingBox> function;
     @Persist
-    private float height = -1.0f;
+    private float height = -1;
     @Persist
-    private float scale = -1.0f;
+    private float scale = -1;
     @Persist
-    private float width = -1.0f;
+    private float width = -1;
 
     public BoundingBoxTrait() {
         super("boundingbox");
