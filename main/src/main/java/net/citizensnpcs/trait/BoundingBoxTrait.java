@@ -61,7 +61,7 @@ public class BoundingBoxTrait extends Trait implements Supplier<BoundingBox> {
     @Override
     public void onSpawn() {
         this.base = EntityDim.from(this.npc.getEntity());
-        this.npc.data().set(NPC.Metadata.BOUNDING_BOX_FUNCTION, (Object) this);
+        this.npc.data().set(NPC.Metadata.BOUNDING_BOX_FUNCTION, this);
     }
 
     public void setBoundingBoxFunction(Function<EntityDim, BoundingBox> func) {
