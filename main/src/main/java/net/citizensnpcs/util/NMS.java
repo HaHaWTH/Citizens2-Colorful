@@ -390,7 +390,19 @@ public class NMS {
             return null;
         }
         try {
-            return LOOKUP.unreflectSetter(field);
+            try {
+                if (Modifier.isStatic(field.getModifiers())) {
+                    return LOOKUP.findStaticSetter(field.getDeclaringClass(), field.getName(), field.getType());
+                } else {
+                    return LOOKUP.findSetter(field.getDeclaringClass(), field.getName(), field.getType());
+                }
+            } catch (Throwable e) {
+                if (Messaging.isDebugging()) {
+                    e.printStackTrace();
+                }
+                return LOOKUP.unreflectSetter(field);
+            }
+            //return LOOKUP.unreflectSetter(field);
         } catch (Exception e) {
             if (log) {
                 Messaging.severeTr(Messages.ERROR_GETTING_FIELD, field.getName(), e.getLocalizedMessage());
@@ -1041,7 +1053,7 @@ public class NMS {
     private static MethodHandle CUSTOM_NBT_TAG;
     private static boolean CUSTOM_NBT_TAG_MISSING;
     private static MethodHandle FIND_PROFILES_BY_NAMES;
-    private static final MethodHandles.Lookup LOOKUP = MethodHandles.lookup();
+    private static final MethodHandles.Lookup LOOKUP;
     private static Field MODIFIERS_FIELD;
     private static boolean PAPER_KNOCKBACK_EVENT_EXISTS = true;
     private static boolean SUPPORTS_ATTRIBUTABLE = true;
@@ -1056,6 +1068,16 @@ public class NMS {
     private static MethodHandle UNSAFE_STATIC_FIELD_OFFSET;
 
     static {
+        MethodHandles.Lookup lookup;
+        try {
+            Field f = MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP");
+            f.setAccessible(true);
+            lookup = (MethodHandles.Lookup) f.get(null);
+        } catch (Throwable e) {
+            lookup = MethodHandles.lookup();
+        }
+        LOOKUP = lookup;
+
         try {
             Class.forName("com.destroystokyo.paper.event.entity.EntityKnockbackByEntityEvent");
         } catch (ClassNotFoundException e) {
