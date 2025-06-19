@@ -7,7 +7,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.BlockCommandSender;
@@ -148,6 +153,8 @@ public class Citizens extends JavaPlugin implements CitizensPlugin {
     private TemplateRegistry templateRegistry;
     private NPCRegistry temporaryRegistry;
     private CitizensTraitFactory traitFactory;
+    private ScheduledFuture<?> lookupTask;
+    private ScheduledExecutorService lookupExecutor;
 
     @Override
     public NPCRegistry createAnonymousNPCRegistry(NPCDataStore store) {
@@ -346,6 +353,8 @@ public class Citizens extends JavaPlugin implements CitizensPlugin {
         if (!enabled)
             return;
 
+        if (lookupTask != null) lookupTask.cancel(false);
+        if (lookupExecutor != null) lookupExecutor.shutdown();
         Editor.leaveAll();
         despawnNPCs(saveOnDisable);
         HandlerList.unregisterAll(this);
@@ -396,8 +405,18 @@ public class Citizens extends JavaPlugin implements CitizensPlugin {
         npcRegistry = new CitizensNPCRegistry(saves, "citizens");
         temporaryRegistry = new CitizensNPCRegistry(new MemoryNPCDataStore(), "citizens-temporary");
         locationLookup = new LocationLookup(npcRegistry);
-        locationLookup.runTaskTimer(CitizensAPI.getPlugin(), 0, 5);
-
+        if (Setting.ASYNC_LOCATION_LOOKUP.asBoolean()) {
+            lookupExecutor = Executors.newSingleThreadScheduledExecutor(
+                    new ThreadFactoryBuilder()
+                            .setNameFormat("Citizens Location Lookup")
+                            .setUncaughtExceptionHandler((t, e) -> Messaging.log(e))
+                            .setDaemon(true)
+                            .build());
+            lookupTask = lookupExecutor.scheduleAtFixedRate(locationLookup, 5 * 50L, 5 * 50L, TimeUnit.MILLISECONDS);
+            Messaging.log("Using async location lookup.");
+        } else {
+            locationLookup.runTaskTimer(CitizensAPI.getPlugin(), 0, 5);
+        }
         traitFactory = new CitizensTraitFactory(this);
         selector = new NPCSelector(this);
         templateRegistry = new TemplateRegistry(new File(getDataFolder(), "templates").toPath());

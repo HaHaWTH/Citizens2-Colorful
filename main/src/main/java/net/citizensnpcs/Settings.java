@@ -211,6 +211,7 @@ public class Settings {
         KEEP_CHUNKS_LOADED("Whether to keep NPC chunks loaded", "npc.chunks.always-keep-loaded", false),
         LOCALE("Controls translation files - defaults to your system language, set to 'en' if English required",
                 "general.translation.locale", ""),
+        ASYNC_LOCATION_LOOKUP("Whether to lookup locations asynchronously", "general.location-lookup.async", false),
         MAX_CONTROLLABLE_FLIGHT_SPEED(
                 "The maximum flying speed that controllable NPCs can reach, in Minecraft velocity units",
                 "npc.controllable.max-flying-speed", 0.75),
