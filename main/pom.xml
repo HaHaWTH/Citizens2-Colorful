@@ -25,7 +25,7 @@
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
             <snapshots>
-                <enabled>false</enabled>
+                <enabled>true</enabled>
             </snapshots>
         </repository>
         <repository>
@@ -83,11 +83,11 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>net.citizensnpcs</groupId>
-            <artifactId>citizensapi</artifactId>
-            <version>${citizensapi.version}</version>
+            <groupId>com.github.HaHaWTH</groupId>
+            <artifactId>CitizensAPI</artifactId>
             <type>jar</type>
             <scope>compile</scope>
+            <version>-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
