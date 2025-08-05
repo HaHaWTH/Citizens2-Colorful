@@ -13,6 +13,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import net.citizensnpcs.api.*;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.BlockCommandSender;
@@ -39,10 +40,6 @@ import net.byteflux.libby.Library;
 import net.byteflux.libby.LibraryManager;
 import net.byteflux.libby.logging.LogLevel;
 import net.citizensnpcs.Settings.Setting;
-import net.citizensnpcs.api.CitizensAPI;
-import net.citizensnpcs.api.CitizensPlugin;
-import net.citizensnpcs.api.LocationLookup;
-import net.citizensnpcs.api.NMSHelper;
 import net.citizensnpcs.api.ai.speech.SpeechContext;
 import net.citizensnpcs.api.command.CommandManager;
 import net.citizensnpcs.api.command.Injector;
@@ -404,7 +401,7 @@ public class Citizens extends JavaPlugin implements CitizensPlugin {
         }
         npcRegistry = new CitizensNPCRegistry(saves, "citizens");
         temporaryRegistry = new CitizensNPCRegistry(new MemoryNPCDataStore(), "citizens-temporary");
-        locationLookup = new LocationLookup(npcRegistry);
+        locationLookup = Setting.ASYNC_LOCATION_LOOKUP.asBoolean() ? new AsyncLocationLookup(npcRegistry) : new LocationLookup(npcRegistry);
         if (Setting.ASYNC_LOCATION_LOOKUP.asBoolean()) {
             lookupExecutor = Executors.newSingleThreadScheduledExecutor(
                     new ThreadFactoryBuilder()

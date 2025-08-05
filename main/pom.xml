@@ -87,7 +87,7 @@
             <artifactId>CitizensAPI</artifactId>
             <type>jar</type>
             <scope>compile</scope>
-            <version>-SNAPSHOT</version>
+            <version>02266bcc02</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
