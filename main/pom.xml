@@ -213,7 +213,7 @@
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                             <filters>
                                 <filter>
-                                    <artifact>net.citizensnpcs:citizensapi</artifact>
+                                    <artifact>com.github.HaHaWTH:CitizensAPI</artifact>
                                     <includes>
                                         <include>**</include>
                                     </includes>
