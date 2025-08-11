@@ -32,7 +32,7 @@ public abstract class AbstractEntityController implements EntityController {
         Class<?> caller = ClassUtil.getCallerClass(1);
         boolean allow = caller == null || classCache.computeIfAbsent(caller, allowCheckFunction);
         if (!allow) {
-            Messaging.log("Denied access from " + caller.getName());
+            Messaging.debug("Denied access from " + caller.getName());
         }
         return allow;
     }
