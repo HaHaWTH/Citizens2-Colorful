@@ -16,6 +16,7 @@ import net.citizensnpcs.util.Util;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 public abstract class AbstractEntityController implements EntityController {
@@ -25,7 +26,7 @@ public abstract class AbstractEntityController implements EntityController {
         return name.startsWith("net.citizensnpcs") || name.startsWith("net.minecraft") || name.startsWith("org.bukkit");
     };
     private static final boolean disableAccessChecks = Boolean.getBoolean("citizens.disableAccessChecks");
-    private static final Map<Class<?>, Boolean> classCache = new Object2BooleanOpenHashMap<>();
+    private static final Map<Class<?>, Boolean> classCache = new ConcurrentHashMap<>();
 
     public static boolean isAccessAllowed() {
         if (disableAccessChecks) return true;
