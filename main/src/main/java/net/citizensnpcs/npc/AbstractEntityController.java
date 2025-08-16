@@ -1,6 +1,5 @@
 package net.citizensnpcs.npc;
 
-import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import net.citizensnpcs.api.util.Messaging;
 import net.citizensnpcs.util.ClassUtil;
 import org.bukkit.Location;
