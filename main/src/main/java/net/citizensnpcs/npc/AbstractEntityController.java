@@ -51,8 +51,7 @@ public abstract class AbstractEntityController implements EntityController {
 
     @Override
     public void die() {
-        if (bukkitEntity == null)
-            return;
+        if (bukkitEntity == null) return;
         bukkitEntity.removeMetadata("NPC", CitizensAPI.getPlugin());
         bukkitEntity.removeMetadata("NPC-ID", CitizensAPI.getPlugin());
         bukkitEntity = null;
@@ -65,8 +64,7 @@ public abstract class AbstractEntityController implements EntityController {
 
     @Override
     public void remove() {
-        if (bukkitEntity == null)
-            return;
+        if (bukkitEntity == null) return;
         if (bukkitEntity instanceof Player) {
             NMS.removeFromWorld(bukkitEntity);
             NMS.remove(bukkitEntity);
