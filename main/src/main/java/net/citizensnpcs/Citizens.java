@@ -91,6 +91,7 @@ public class Citizens extends JavaPlugin implements CitizensPlugin {
     private LocationLookup locationLookup;
     private final NMSHelper nmsHelper = new NMSHelper() {
         private boolean SUPPORT_OWNER_PROFILE = false;
+
         {
             try {
                 SkullMeta.class.getMethod("getOwnerProfile");
@@ -334,7 +335,7 @@ public class Citizens extends JavaPlugin implements CitizensPlugin {
 
     @Override
     public boolean onCommand(CommandSender sender, org.bukkit.command.Command command, String cmdName, String[] args) {
-        Object[] methodArgs = { sender, selector == null ? null : selector.getSelected(sender) };
+        Object[] methodArgs = {sender, selector == null ? null : selector.getSelected(sender)};
         return commands.executeSafe(command, args, sender, methodArgs);
     }
 
